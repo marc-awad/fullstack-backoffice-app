@@ -1,5 +1,6 @@
 // router/AppRouter.tsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import Home from "../pages/Home"
 import Login from "../pages/Login"
 import Register from "../pages/Register"
 import Unauthorized from "../pages/Unauthorized"
@@ -10,6 +11,9 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Page d'accueil PUBLIQUE */}
+        <Route path="/" element={<Home />} />
+
         {/* Routes publiques */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -17,20 +21,10 @@ export default function AppRouter() {
 
         {/* Routes protégées - nécessitent authentification */}
         <Route
-          path="/"
+          path="/dashboard"
           element={
             <AuthGuard>
               <h1>Dashboard Utilisateur</h1>
-              <p>Bienvenue sur votre tableau de bord</p>
-            </AuthGuard>
-          }
-        />
-
-        <Route
-          path="/products"
-          element={
-            <AuthGuard>
-              <h1>Liste des produits</h1>
             </AuthGuard>
           }
         />
@@ -44,40 +38,12 @@ export default function AppRouter() {
           }
         />
 
-        {/* Routes ADMIN - nécessitent authentification + rôle ADMIN */}
+        {/* Routes ADMIN */}
         <Route
           path="/admin"
           element={
             <AdminGuard>
               <h1>🛡️ Backoffice Admin</h1>
-              <p>Panneau d'administration</p>
-            </AdminGuard>
-          }
-        />
-
-        <Route
-          path="/admin/users"
-          element={
-            <AdminGuard>
-              <h1>Gestion des utilisateurs</h1>
-            </AdminGuard>
-          }
-        />
-
-        <Route
-          path="/admin/products"
-          element={
-            <AdminGuard>
-              <h1>Gestion des produits</h1>
-            </AdminGuard>
-          }
-        />
-
-        <Route
-          path="/admin/orders"
-          element={
-            <AdminGuard>
-              <h1>Gestion des commandes</h1>
             </AdminGuard>
           }
         />

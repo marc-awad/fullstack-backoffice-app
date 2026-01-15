@@ -5,67 +5,72 @@ import type { Page } from "../models/Page"
 const BASE_URL = "/products"
 const ADMIN_URL = "/admin/products"
 
+// =======================
+// PUBLIC
+// =======================
+
+export interface GetProductsParams {
+  page?: number
+  size?: number
+  search?: string
+  category?: string
+  sort?: string
+}
+
+/**
+ * Récupère la liste des produits avec pagination et filtres
+ */
 export const getProducts = async (
-  page = 0,
-  size = 10
+  params: GetProductsParams = {}
 ): Promise<Page<Product>> => {
-  try {
-    const res = await api.get(BASE_URL, {
-      params: { page, size },
-    })
-    return res.data
-  } catch (err) {
-    throw new Error("Erreur lors du chargement des produits")
-  }
+  const { page = 0, size = 12, search, category, sort } = params
+
+  const response = await api.get<Page<Product>>(BASE_URL, {
+    params: {
+      page,
+      size,
+      search,
+      category,
+      sort,
+    },
+  })
+
+  return response.data
 }
 
+/**
+ * Récupère un produit par son ID
+ */
 export const getProductById = async (id: number): Promise<Product> => {
-  try {
-    const res = await api.get(`${BASE_URL}/${id}`)
-    return res.data
-  } catch {
-    throw new Error("Produit introuvable")
-  }
+  const response = await api.get<Product>(`${BASE_URL}/${id}`)
+  return response.data
 }
 
-export const searchProducts = async (query: string): Promise<Product[]> => {
-  try {
-    const res = await api.get(`${BASE_URL}/search`, {
-      params: { query },
-    })
-    return res.data
-  } catch {
-    throw new Error("Erreur lors de la recherche")
-  }
+/**
+ * Récupère toutes les catégories disponibles
+ */
+export const getCategories = async (): Promise<string[]> => {
+  const response = await api.get<string[]>(`${BASE_URL}/categories`)
+  return response.data
 }
 
-// 🔐 ADMIN
+// =======================
+// ADMIN
+// =======================
 
 export const createProduct = async (product: Product): Promise<Product> => {
-  try {
-    const res = await api.post(ADMIN_URL, product)
-    return res.data
-  } catch {
-    throw new Error("Création du produit impossible")
-  }
+  const res = await api.post(ADMIN_URL, product)
+  return res.data
 }
 
 export const updateProduct = async (
   id: number,
   product: Product
 ): Promise<Product> => {
-  try {
-    const res = await api.put(`${ADMIN_URL}/${id}`, product)
-    return res.data
-  } catch {
-    throw new Error("Mise à jour impossible")
-  }
+  const res = await api.put(`${ADMIN_URL}/${id}`, product)
+  return res.data
 }
 
 export const deleteProduct = async (id: number): Promise<void> => {
-  try {
-    await api.delete(`${ADMIN_URL}/${id}`)
-  } catch {
-    throw new Error("Suppression impossible")
-  }
+  await api.delete(`${ADMIN_URL}/${id}`)
 }

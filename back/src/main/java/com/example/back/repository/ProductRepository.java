@@ -4,15 +4,17 @@ import com.example.back.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    // Recherche par nom avec pagination
+    // Recherche par nom (insensible à la casse)
     Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
-    // Recherche par catégorie avec pagination
-    Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
+    // Filtrage par catégorie
+    Page<Product> findByCategoryName(String categoryName, Pageable pageable);
 
-    // Recherche combinée nom + catégorie avec pagination
-    Page<Product> findByNameContainingIgnoreCaseAndCategoryId(String name, Long categoryId, Pageable pageable);
+    // Recherche par nom ET catégorie
+    Page<Product> findByNameContainingIgnoreCaseAndCategoryName(String name, String categoryName, Pageable pageable);
 }

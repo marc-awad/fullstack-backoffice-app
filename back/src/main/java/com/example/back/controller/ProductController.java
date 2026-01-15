@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Produits", description = "API publique pour consulter le catalogue de produits")
 @RestController
 @RequestMapping("/api/products")
@@ -28,12 +30,11 @@ public class ProductController {
 
     // =======================
     // GET /api/products
-    // Liste tous les produits avec pagination
+    // Liste tous les produits avec pagination et filtres
     // =======================
     @Operation(
             summary = "Lister tous les produits",
-            description = "Récupère la liste paginée de tous les produits disponibles dans le catalogue. " +
-                    "Endpoint public accessible sans authentification."
+            description = "Récupère la liste paginée de tous les produits avec filtres optionnels par nom et catégorie"
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -55,9 +56,13 @@ public class ProductController {
             @Parameter(description = "Numéro de page (commence à 0)", example = "0")
             @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Nombre d'éléments par page", example = "10")
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "Recherche par nom de produit", example = "Smartphone")
+            @RequestParam(required = false) String search,
+            @Parameter(description = "Filtrer par nom de catégorie", example = "Électronique")
+            @RequestParam(required = false) String category
     ) {
-        Page<ProductResponse> products = productService.getAllProducts(page, size);
+        Page<ProductResponse> products = productService.searchProducts(search, category, page, size);
         return ResponseEntity.ok(products);
     }
 
@@ -94,42 +99,24 @@ public class ProductController {
     }
 
     // =======================
-    // GET /api/products/search
-    // Recherche par nom et/ou catégorie avec pagination
+    // GET /api/products/categories
+    // Liste toutes les catégories
     // =======================
     @Operation(
-            summary = "Rechercher des produits",
-            description = "Permet de filtrer les produits par nom et/ou catégorie avec pagination. " +
-                    "Les paramètres de recherche sont optionnels."
+            summary = "Lister toutes les catégories",
+            description = "Récupère la liste de toutes les catégories disponibles"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Résultats de recherche retournés",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = Page.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Erreur serveur interne",
-                    content = @Content(mediaType = "text/plain")
+                    description = "Liste des catégories récupérée avec succès",
+                    content = @Content(mediaType = "application/json")
             )
     })
-    @GetMapping("/search")
-    public ResponseEntity<Page<ProductResponse>> searchProducts(
-            @Parameter(description = "Nom du produit à rechercher (recherche partielle)", example = "Smartphone")
-            @RequestParam(required = false) String name,
-            @Parameter(description = "ID de la catégorie pour filtrer", example = "1")
-            @RequestParam(required = false) Long categoryId,
-            @Parameter(description = "Numéro de page", example = "0")
-            @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "Nombre d'éléments par page", example = "10")
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Page<ProductResponse> products = productService.searchProducts(name, categoryId, page, size);
-        return ResponseEntity.ok(products);
+    @GetMapping("/categories")
+    public ResponseEntity<List<String>> getAllCategories() {
+        List<String> categories = productService.getAllCategories();
+        return ResponseEntity.ok(categories);
     }
 
     // =======================

@@ -49,12 +49,6 @@ public class ProductService {
         return mapToResponse(product);
     }
 
-    public Page<ProductResponse> getAllProducts(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<Product> products = productRepository.findAll(pageable);
-        return products.map(this::mapToResponse);
-    }
-
     public ProductResponse updateProduct(Long id, ProductRequest request) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
@@ -80,19 +74,35 @@ public class ProductService {
     }
 
     // =======================
-    // Recherche par nom et/ou catégorie avec pagination
+    // Récupérer toutes les catégories
     // =======================
-    public Page<ProductResponse> searchProducts(String keyword, Long categoryId, int page, int size) {
+    public List<String> getAllCategories() {
+        return productRepository.findAll()
+                .stream()
+                .map(product -> product.getCategory().getName())
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    // =======================
+    // Recherche avec filtres par nom et/ou catégorie
+    // =======================
+    public Page<ProductResponse> searchProducts(String search, String category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Product> products;
 
-        if (keyword != null && !keyword.isEmpty() && categoryId != null) {
-            products = productRepository.findByNameContainingIgnoreCaseAndCategoryId(keyword, categoryId, pageable);
-        } else if (keyword != null && !keyword.isEmpty()) {
-            products = productRepository.findByNameContainingIgnoreCase(keyword, pageable);
-        } else if (categoryId != null) {
-            products = productRepository.findByCategoryId(categoryId, pageable);
+        if (search != null && !search.isEmpty() && category != null && !category.isEmpty()) {
+            // Recherche par nom ET catégorie
+            products = productRepository.findByNameContainingIgnoreCaseAndCategoryName(search, category, pageable);
+        } else if (search != null && !search.isEmpty()) {
+            // Recherche par nom uniquement
+            products = productRepository.findByNameContainingIgnoreCase(search, pageable);
+        } else if (category != null && !category.isEmpty()) {
+            // Filtrage par catégorie uniquement
+            products = productRepository.findByCategoryName(category, pageable);
         } else {
+            // Tous les produits
             products = productRepository.findAll(pageable);
         }
 
