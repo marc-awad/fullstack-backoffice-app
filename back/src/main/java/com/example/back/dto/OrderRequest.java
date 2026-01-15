@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 public class OrderRequest {
 
-    @NotNull(message = "User ID is required")
     private Long userId;
 
     @NotNull(message = "Order items are required")

@@ -13,12 +13,14 @@ import com.example.back.repository.ProductRepository;
 import com.example.back.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true) // Par défaut, toutes les méthodes sont en lecture seule
 public class OrderService {
 
     @Autowired
@@ -33,6 +35,7 @@ public class OrderService {
     /**
      * Créer une nouvelle commande
      */
+    @Transactional // Écriture, donc on override le readOnly
     public OrderResponse createOrder(OrderRequest request) {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -73,6 +76,7 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
+        // Conversion en DTO dans la transaction
         List<OrderResponse.OrderItemResponse> responseItems = savedOrder.getItems().stream()
                 .map(i -> OrderResponse.OrderItemResponse.builder()
                         .productId(i.getProductId())
@@ -96,11 +100,16 @@ public class OrderService {
     /**
      * Récupérer les commandes d'un utilisateur
      */
+    @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        return orderRepository.findByUser(user).stream().map(order -> {
+        List<Order> orders = orderRepository.findByUser(user);
+
+        // IMPORTANT : On convertit en DTO DANS la transaction
+        // pour que Hibernate puisse charger les items
+        return orders.stream().map(order -> {
             List<OrderResponse.OrderItemResponse> responseItems = order.getItems().stream()
                     .map(i -> OrderResponse.OrderItemResponse.builder()
                             .productId(i.getProductId())
