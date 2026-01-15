@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${appName}">Fullstack Backoffice API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .version {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #10b981;
+            color: white;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .endpoints {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .endpoints h2 {
+            color: #667eea;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .endpoint-item {
+            padding: 10px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 0.85em;
+        }
+
+        .method.get { background: #10b981; color: white; }
+        .method.post { background: #3b82f6; color: white; }
+        .method.put { background: #f59e0b; color: white; }
+        .method.delete { background: #ef4444; color: white; }
+
+        .info {
+            color: #666;
+            font-size: 0.85em;
+            margin-top: 20px;
+        }
+
+        .timestamp {
+            color: #999;
+            font-size: 0.8em;
+            margin-top: 20px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #888;
+            font-size: 0.85em;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">API</div>
+
+    <h1 th:text="${appName}">Fullstack Backoffice API</h1>
+    <div class="version">Version <span th:text="${version}">1.0.0</span></div>
+
+    <div class="status-badge">
+        <span th:text="${status}">Running</span> ✓
+    </div>
+
+    <div class="endpoints">
+        <h2>📌 Endpoints Disponibles</h2>
+
+        <div class="endpoint-item">
+            <span class="method post">POST</span>
+            <span>/api/auth/register</span>
+        </div>
+
+        <div class="endpoint-item">
+            <span class="method post">POST</span>
+            <span>/api/auth/login</span>
+        </div>
+
+        <div class="endpoint-item">
+            <span class="method get">GET</span>
+            <span>/api/products</span>
+        </div>
+
+        <div class="endpoint-item">
+            <span class="method post">POST</span>
+            <span>/api/orders</span>
+            <span style="color: #888; font-size: 0.85em;">(authentification requise)</span>
+        </div>
+
+        <div class="endpoint-item">
+            <span class="method get">GET</span>
+            <span>/api/orders/my-orders</span>
+            <span style="color: #888; font-size: 0.85em;">(authentification requise)</span>
+        </div>
+
+        <div class="endpoint-item">
+            <span class="method get">GET</span>
+            <span>/api/admin/**</span>
+            <span style="color: #888; font-size: 0.85em;">(rôle ADMIN requis)</span>
+        </div>
+    </div>
+
+    <div class="info">
+        💡 Cette API utilise JWT pour l'authentification<br>
+        📚 Documentation complète disponible prochainement
+    </div>
+
+    <div class="timestamp">
+        Dernière mise à jour : <span th:text="${timestamp}">--/--/---- --:--:--</span>
+    </div>
+
+    <div class="footer">
+        Développé avec ❤️ par l'équipe Backoffice<br>
+        <a href="https://spring.io/" target="_blank">Spring Boot</a> |
+        <a href="https://www.mysql.com/" target="_blank">MySQL</a> |
+        <a href="https://jwt.io/" target="_blank">JWT</a>
+    </div>
+</div>
+</body>
+</html>
