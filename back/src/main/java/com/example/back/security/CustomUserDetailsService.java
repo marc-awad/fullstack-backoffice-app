@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -22,7 +20,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .authorities(user.getRoles().stream().map(Enum::name).toArray(String[]::new))
+                .authorities(user.getRoles().stream()
+                        .map(role -> "ROLE_" + role.name())
+                        .toArray(String[]::new))
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -61,7 +62,14 @@ public class UserService {
             throw new InvalidCredentialsException("Invalid username or password");
         }
 
-        String token = jwtUtil.generateToken(user.getUsername());
+        // MODIFICATION ICI : Créer les authorities à partir des rôles de l'utilisateur
+        var authorities = user.getRoles().stream()
+                .map(role -> new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + role.name()))
+                .collect(Collectors.toList());
+
+        // Passer les authorities au générateur de token
+        String token = jwtUtil.generateToken(user.getUsername(), authorities);
+
         return new AuthResponse(user.getUsername(), token);
     }
 }
