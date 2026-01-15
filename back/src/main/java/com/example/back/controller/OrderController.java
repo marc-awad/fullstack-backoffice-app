@@ -5,6 +5,13 @@ import com.example.back.dto.OrderResponse;
 import com.example.back.model.User;
 import com.example.back.repository.UserRepository;
 import com.example.back.service.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Commandes", description = "API de gestion des commandes utilisateur (authentification requise)")
 @RestController
 @RequestMapping("/api/orders")
+@SecurityRequirement(name = "bearerAuth")
 public class OrderController {
 
     private final OrderService orderService;
@@ -30,8 +39,45 @@ public class OrderController {
     // POST /api/orders
     // Créer une nouvelle commande pour l'utilisateur connecté
     // ========================================
+    @Operation(
+            summary = "Créer une nouvelle commande",
+            description = "Permet à un utilisateur authentifié de passer une commande avec un ou plusieurs produits. " +
+                    "L'utilisateur est automatiquement identifié via le token JWT."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Commande créée avec succès",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = OrderResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Données de commande invalides (produit inexistant, stock insuffisant, etc.)",
+                    content = @Content(mediaType = "text/plain")
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Non authentifié - Token JWT manquant ou invalide",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Utilisateur ou produit non trouvé",
+                    content = @Content(mediaType = "text/plain")
+            )
+    })
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest request) {
+    public ResponseEntity<OrderResponse> createOrder(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Détails de la commande incluant les articles et quantités",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = OrderRequest.class))
+            )
+            @Valid @RequestBody OrderRequest request
+    ) {
         System.out.println("=== DEBUT createOrder() ===");
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -67,6 +113,31 @@ public class OrderController {
     // GET /api/orders/my-orders
     // Récupérer l'historique des commandes de l'utilisateur connecté
     // ========================================
+    @Operation(
+            summary = "Consulter mes commandes",
+            description = "Récupère l'historique complet des commandes de l'utilisateur authentifié, " +
+                    "incluant les détails des produits, quantités, prix et statuts."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Liste des commandes récupérée avec succès",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = OrderResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Non authentifié - Token JWT manquant ou invalide",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Utilisateur non trouvé",
+                    content = @Content(mediaType = "text/plain")
+            )
+    })
     @GetMapping("/my-orders")
     public ResponseEntity<List<OrderResponse>> getMyOrders() {
         System.out.println("=== DEBUT getMyOrders() ===");
