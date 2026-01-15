@@ -1,18 +1,19 @@
-// guards/AdminRoute.tsx
+// guards/AdminGuard.tsx
 import { Navigate } from "react-router-dom"
 import { isAuthenticated, getUserRole, logout } from "../services/authService"
 import type { ReactNode } from "react"
 
-interface AdminRouteProps {
+interface AdminGuardProps {
   children: ReactNode
 }
 
 /**
- * Route Admin (alias pour AdminGuard)
+ * Guard Admin
  * Protège les routes nécessitant le rôle ADMIN
+ * Vérifie d'abord l'authentification, puis le rôle
  */
-export default function AdminRoute({ children }: AdminRouteProps) {
-  // 1. Vérifier l'authentification
+export default function AdminGuard({ children }: AdminGuardProps) {
+  // 1. Vérifier l'authentification (token valide et non expiré)
   if (!isAuthenticated()) {
     logout()
     return <Navigate to="/login" replace />
@@ -22,6 +23,7 @@ export default function AdminRoute({ children }: AdminRouteProps) {
   const role = getUserRole()
 
   if (role !== "ADMIN") {
+    // Redirection vers page d'accueil si non autorisé
     return <Navigate to="/unauthorized" replace />
   }
 
