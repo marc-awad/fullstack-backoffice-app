@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -37,9 +38,10 @@ public class UserService {
             throw new UserAlreadyExistsException("Username already taken");
         }
 
-        if (userRepository.findAll().stream().anyMatch(u -> u.getEmail().equalsIgnoreCase(request.getEmail()))) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("Email already registered");
         }
+
 
         User user = User.builder()
                 .username(request.getUsername())
@@ -47,6 +49,7 @@ public class UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .roles(Collections.singleton(Role.USER))
                 .enabled(true)
+                .createdAt(LocalDateTime.now())
                 .build();
 
         userRepository.save(user);

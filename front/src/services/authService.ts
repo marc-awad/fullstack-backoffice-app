@@ -5,11 +5,15 @@ import type { JwtPayload } from "../models/JwtPayload"
 
 const TOKEN_KEY = "token"
 
-export const register = async (
-  username: string,
+export interface RegisterRequest {
+  username: string
+  email: string
   password: string
-): Promise<void> => {
-  await api.post("/auth/register", { username, password })
+}
+
+export const register = (data: RegisterRequest) => {
+//   console.log("Registering user with data:", data)
+  return api.post("/auth/register", data)
 }
 
 export const login = async (
