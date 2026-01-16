@@ -1,5 +1,5 @@
 // components/Layout.tsx
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 import Header from "./Header"
 import "../style/Layout.css"
 

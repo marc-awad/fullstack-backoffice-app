@@ -8,6 +8,7 @@ import Unauthorized from "../pages/Unauthorized"
 import ProductDetail from "../pages/ProductDetail"
 import AuthGuard from "../guards/AuthGuard"
 import AdminGuard from "../guards/AdminGuard"
+import Profile from "../pages/Profile"
 
 export default function AppRouter() {
   return (
@@ -34,7 +35,7 @@ export default function AppRouter() {
               </AuthGuard>
             }
           />
-
+          <Route path="/profile" element={<Profile />} />
           <Route
             path="/orders"
             element={
