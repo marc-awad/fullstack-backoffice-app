@@ -4,6 +4,7 @@ import Home from "../pages/Home"
 import Login from "../pages/Login"
 import Register from "../pages/Register"
 import Unauthorized from "../pages/Unauthorized"
+import ProductDetail from "../pages/ProductDetail"
 import AuthGuard from "../guards/AuthGuard"
 import AdminGuard from "../guards/AdminGuard"
 
@@ -18,6 +19,9 @@ export default function AppRouter() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+
+        {/* Route PUBLIQUE - Détail produit */}
+        <Route path="/products/:id" element={<ProductDetail />} />
 
         {/* Routes protégées - nécessitent authentification */}
         <Route
