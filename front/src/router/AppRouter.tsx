@@ -9,6 +9,7 @@ import ProductDetail from "../pages/ProductDetail"
 import AuthGuard from "../guards/AuthGuard"
 import AdminGuard from "../guards/AdminGuard"
 import Profile from "../pages/Profile"
+import MyOrders from "../pages/MyOrders"
 
 export default function AppRouter() {
   return (
@@ -35,12 +36,21 @@ export default function AppRouter() {
               </AuthGuard>
             }
           />
-          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/profile"
+            element={
+              <AuthGuard>
+                <Profile />
+              </AuthGuard>
+            }
+          />
+
+          {/* Route Mes commandes - PROTÉGÉE */}
           <Route
             path="/orders"
             element={
               <AuthGuard>
-                <h1>Mes commandes</h1>
+                <MyOrders />
               </AuthGuard>
             }
           />
