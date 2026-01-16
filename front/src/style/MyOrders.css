@@ -61,6 +61,38 @@
   margin: 2rem 0;
 }
 
+/* Message de succès */
+.success-message {
+  background-color: #d1f2eb;
+  color: #0a6847;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  margin: 0 0 2rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  border: 2px solid #0a6847;
+  animation: slideDown 0.3s ease-out;
+}
+
+.success-icon {
+  font-size: 1.25rem;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Liste des commandes */
 .orders-list {
   display: flex;

@@ -62,7 +62,7 @@ export default function ProductDetail() {
   }
 
   const handleQuantityChange = (newQuantity: number) => {
-    if (product && newQuantity >= 1 && newQuantity <= product.stock) {
+    if (product && newQuantity >= 1 && newQuantity <= product.stockQuantity) {
       setQuantity(newQuantity)
     }
   }
@@ -150,17 +150,17 @@ export default function ProductDetail() {
             </div>
           )}
 
-          {product.stock === 0 && (
+          {product.stockQuantity === 0 && (
             <div className="stock-badge out-of-stock">
               <span>❌</span> Rupture de stock
             </div>
           )}
-          {product.stock > 0 && product.stock <= 5 && (
+          {product.stockQuantity > 0 && product.stockQuantity <= 5 && (
             <div className="stock-badge low-stock">
               <span>⚠️</span> Stock limité
             </div>
           )}
-          {product.stock > 5 && (
+          {product.stockQuantity > 5 && (
             <div className="stock-badge in-stock">
               <span>✅</span> En stock
             </div>
@@ -179,10 +179,10 @@ export default function ProductDetail() {
               {formatPrice(product.price)}
             </span>
             <span className="product-stock-info">
-              {product.stock > 0
-                ? `${product.stock} unité${
-                    product.stock > 1 ? "s" : ""
-                  } disponible${product.stock > 1 ? "s" : ""}`
+              {product.stockQuantity > 0
+                ? `${product.stockQuantity} unité${
+                    product.stockQuantity > 1 ? "s" : ""
+                  } disponible${product.stockQuantity > 1 ? "s" : ""}`
                 : "Indisponible"}
             </span>
           </div>
@@ -193,7 +193,7 @@ export default function ProductDetail() {
           </div>
 
           {/* Sélection de quantité */}
-          {product.stock > 0 && (
+          {product.stockQuantity > 0 && (
             <div className="quantity-section">
               <label htmlFor="quantity">Quantité :</label>
               <div className="quantity-selector">
@@ -212,13 +212,13 @@ export default function ProductDetail() {
                     handleQuantityChange(parseInt(e.target.value) || 1)
                   }
                   min="1"
-                  max={product.stock}
+                  max={product.stockQuantity}
                   className="quantity-input"
                 />
                 <button
                   className="quantity-btn"
                   onClick={() => handleQuantityChange(quantity + 1)}
-                  disabled={quantity >= product.stock}
+                  disabled={quantity >= product.stockQuantity}
                 >
                   +
                 </button>
@@ -228,7 +228,7 @@ export default function ProductDetail() {
 
           {/* Boutons d'action */}
           <div className="product-actions">
-            {product.stock > 0 ? (
+            {product.stockQuantity > 0 ? (
               <>
                 <button className="btn-primary btn-large" onClick={handleOrder}>
                   <span className="btn-icon">🛒</span>
@@ -250,7 +250,7 @@ export default function ProductDetail() {
             )}
           </div>
 
-          {!isAuthenticated && product.stock > 0 && (
+          {!isAuthenticated && product.stockQuantity > 0 && (
             <div className="auth-notice">
               <p>
                 💡 <Link to="/login">Connectez-vous</Link> pour passer commande

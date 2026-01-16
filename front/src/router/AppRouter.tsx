@@ -10,6 +10,7 @@ import AuthGuard from "../guards/AuthGuard"
 import AdminGuard from "../guards/AdminGuard"
 import Profile from "../pages/Profile"
 import MyOrders from "../pages/MyOrders"
+import NewOrder from "../pages/NewOrder"
 
 export default function AppRouter() {
   return (
@@ -51,6 +52,16 @@ export default function AppRouter() {
             element={
               <AuthGuard>
                 <MyOrders />
+              </AuthGuard>
+            }
+          />
+
+          {/* Route Nouvelle commande - PROTÉGÉE */}
+          <Route
+            path="/orders/new"
+            element={
+              <AuthGuard>
+                <NewOrder />
               </AuthGuard>
             }
           />

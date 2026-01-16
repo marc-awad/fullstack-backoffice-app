@@ -16,10 +16,21 @@ export const createOrder = async (
 }
 
 export const getMyOrders = async (): Promise<Order[]> => {
-  try {
-    const res = await api.get(`${BASE_URL}/my-orders`)
-    return res.data
-  } catch {
-    throw new Error("Impossible de charger les commandes")
-  }
+  // Utilisez "api" au lieu de "axios"
+  const response = await api.get("/orders/my-orders") // ou '/api/orders' selon votre backend
+
+  // 🎯 Normalisation des données
+  return response.data.map((apiOrder: any) => ({
+    id: apiOrder.orderId,
+    userId: apiOrder.userId,
+    createdAt: apiOrder.orderDate,
+    totalPrice: apiOrder.totalAmount,
+    status: apiOrder.status,
+    items: apiOrder.items.map((apiItem: any) => ({
+      productId: apiItem.productId,
+      productName: apiItem.productName,
+      quantity: apiItem.quantity,
+      price: apiItem.unitPrice,
+    })),
+  }))
 }

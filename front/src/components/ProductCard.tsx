@@ -25,7 +25,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               <span>📦</span>
             </div>
           )}
-          {product.stock === 0 && (
+          {product.stockQuantity === 0 && (
             <div className="out-of-stock-badge">Rupture de stock</div>
           )}
         </div>
@@ -42,7 +42,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div className="product-footer">
             <span className="product-price">{formatPrice(product.price)}</span>
             <span className="product-stock">
-              {product.stock > 0 ? `${product.stock} en stock` : "Épuisé"}
+              {product.stockQuantity > 0
+                ? `${product.stockQuantity} en stock`
+                : "Épuisé"}
             </span>
           </div>
         </div>
