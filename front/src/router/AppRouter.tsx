@@ -11,6 +11,8 @@ import AdminGuard from "../guards/AdminGuard"
 import Profile from "../pages/Profile"
 import MyOrders from "../pages/MyOrders"
 import NewOrder from "../pages/NewOrder"
+import AdminDashboard from "../pages/AdminDashboard"
+import ProtectedRoute from "../guards/ProtectedRoute"
 
 export default function AppRouter() {
   return (
@@ -34,6 +36,14 @@ export default function AppRouter() {
             element={
               <AuthGuard>
                 <h1>Dashboard Utilisateur</h1>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/admin/dashboard"
+            element={
+              <AuthGuard>
+                <AdminDashboard />
               </AuthGuard>
             }
           />

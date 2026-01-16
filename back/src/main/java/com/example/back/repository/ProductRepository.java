@@ -17,4 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // Recherche par nom ET catégorie
     Page<Product> findByNameContainingIgnoreCaseAndCategoryName(String name, String categoryName, Pageable pageable);
+
+    // Compter les produits avec un stock faible
+    long countByStockQuantityLessThan(int stockQuantity);
 }

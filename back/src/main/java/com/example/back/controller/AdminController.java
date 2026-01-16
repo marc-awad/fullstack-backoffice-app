@@ -1,6 +1,9 @@
 package com.example.back.controller;
 
 import com.example.back.dto.*;
+import com.example.back.repository.OrderRepository;
+import com.example.back.repository.ProductRepository;
+import com.example.back.repository.UserRepository;
 import com.example.back.service.ProductService;
 import com.example.back.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @Tag(name = "Administration", description = "API d'administration réservée aux utilisateurs avec le rôle ADMIN")
 @RestController
 @RequestMapping("/api/admin")
@@ -27,10 +32,16 @@ public class AdminController {
 
     private final ProductService productService;
     private final UserService userService;
+    private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
-    public AdminController(ProductService productService, UserService userService) {
+    public AdminController(ProductService productService, UserService userService, OrderRepository orderRepository, UserRepository userRepository, ProductRepository productRepository) {
         this.productService = productService;
         this.userService = userService;
+        this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
     }
 
     // =======================
@@ -114,6 +125,19 @@ public class AdminController {
                     content = @Content(mediaType = "text/plain")
             )
     })
+    @GetMapping("/stats")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AdminStatsDTO> getStats() {
+        AdminStatsDTO stats = new AdminStatsDTO();
+        stats.setTotalProducts(productRepository.count());
+        stats.setTotalUsers(userRepository.count());
+        stats.setTotalOrders(orderRepository.count());
+        stats.setTotalRevenue(orderRepository.sumTotalAmount());
+        stats.setRecentOrders(orderRepository.countByOrderDateAfter(LocalDateTime.now().minusDays(7))); // ⬅️ CORRECTION
+        stats.setLowStockProducts(productRepository.countByStockQuantityLessThan(5));
+
+        return ResponseEntity.ok(stats);
+    }
     @PutMapping("/products/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @Parameter(description = "ID du produit à modifier", example = "1", required = true)
