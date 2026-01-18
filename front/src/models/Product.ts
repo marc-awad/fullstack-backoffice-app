@@ -5,7 +5,13 @@ export interface Product {
   description: string
   price: number
   stockQuantity: number
-  category: string
+  category?: {
+    id: number
+    name: string
+  }
+  categoryId?: number
+  categoryName?: string
+  lienImage?: string
   imageUrl?: string
   createdAt?: string
   updatedAt?: string

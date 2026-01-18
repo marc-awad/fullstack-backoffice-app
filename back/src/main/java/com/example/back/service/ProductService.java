@@ -1,16 +1,20 @@
 package com.example.back.service;
 
+import com.example.back.dto.AdminStatsDTO;
 import com.example.back.dto.ProductRequest;
 import com.example.back.dto.ProductResponse;
 import com.example.back.exception.ProductNotFoundException;
 import com.example.back.model.Categorie;
 import com.example.back.model.Product;
 import com.example.back.repository.CategorieRepository;
+import com.example.back.repository.OrderRepository;
 import com.example.back.repository.ProductRepository;
+import com.example.back.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +26,12 @@ public class ProductService {
 
     @Autowired
     private CategorieRepository categorieRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     // =======================
     // CRUD
@@ -107,6 +117,33 @@ public class ProductService {
         }
 
         return products.map(this::mapToResponse);
+    }
+
+    // =======================
+    // Statistiques Admin
+    // =======================
+    public AdminStatsDTO getAdminStats() {
+        AdminStatsDTO stats = new AdminStatsDTO();
+
+        // Nombre total de produits
+        stats.setTotalProducts(productRepository.count());
+
+        // Nombre total d'utilisateurs
+        stats.setTotalUsers(userRepository.count());
+
+        // Nombre total de commandes
+        stats.setTotalOrders(orderRepository.count());
+
+        // Revenu total (somme des montants de toutes les commandes)
+        stats.setTotalRevenue(orderRepository.sumTotalAmount());
+
+        // Commandes récentes (derniers 7 jours)
+        stats.setRecentOrders(orderRepository.countByOrderDateAfter(LocalDateTime.now().minusDays(7)));
+
+        // Produits en stock faible (moins de 5 unités)
+        stats.setLowStockProducts(productRepository.countByStockQuantityLessThan(5));
+
+        return stats;
     }
 
     // =======================

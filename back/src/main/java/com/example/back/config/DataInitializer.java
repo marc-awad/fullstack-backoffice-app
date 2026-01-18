@@ -7,6 +7,8 @@ import com.example.back.model.User;
 import com.example.back.repository.CategorieRepository;
 import com.example.back.repository.ProductRepository;
 import com.example.back.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -26,18 +28,22 @@ public class DataInitializer implements CommandLineRunner {
     private final CategorieRepository categorieRepository;
     private final ProductRepository productRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final EntityManager entityManager;
 
     public DataInitializer(UserRepository userRepository,
                            CategorieRepository categorieRepository,
                            ProductRepository productRepository,
-                           BCryptPasswordEncoder passwordEncoder) {
+                           BCryptPasswordEncoder passwordEncoder,
+                           EntityManager entityManager) {
         this.userRepository = userRepository;
         this.categorieRepository = categorieRepository;
         this.productRepository = productRepository;
         this.passwordEncoder = passwordEncoder;
+        this.entityManager = entityManager;
     }
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         // Vérifier si la base de données est déjà remplie
         if (userRepository.count() > 0) {
@@ -48,6 +54,9 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("========================================");
         System.out.println("  INITIALISATION DES DONNÉES DE TEST");
         System.out.println("========================================");
+
+        // Réinitialiser les auto-increments
+        resetAutoIncrements();
 
         // 1. Créer les utilisateurs
         createUsers();
@@ -61,6 +70,25 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("========================================");
         System.out.println("  ✓ INITIALISATION TERMINÉE AVEC SUCCÈS");
         System.out.println("========================================");
+    }
+
+    /**
+     * Réinitialise les auto-increments de toutes les tables
+     */
+    private void resetAutoIncrements() {
+        System.out.println("\n→ Réinitialisation des auto-increments...");
+
+        try {
+            // Réinitialiser l'auto-increment de chaque table
+            entityManager.createNativeQuery("ALTER TABLE users AUTO_INCREMENT = 1").executeUpdate();
+            entityManager.createNativeQuery("ALTER TABLE categories AUTO_INCREMENT = 1").executeUpdate();
+            entityManager.createNativeQuery("ALTER TABLE products AUTO_INCREMENT = 1").executeUpdate();
+            entityManager.createNativeQuery("ALTER TABLE orders AUTO_INCREMENT = 1").executeUpdate();
+
+            System.out.println("  ✓ Auto-increments réinitialisés à 1");
+        } catch (Exception e) {
+            System.out.println("  ⚠ Impossible de réinitialiser les auto-increments (normal si tables vides)");
+        }
     }
 
     /**

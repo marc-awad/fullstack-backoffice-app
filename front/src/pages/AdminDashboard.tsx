@@ -94,9 +94,9 @@ export default function AdminDashboard() {
             <p>Vue d'ensemble de votre plateforme e-commerce</p>
           </div>
           <div className="header-actions">
-            <Link to="/admin/products/new" className="btn-primary">
-              <span className="btn-icon">➕</span>
-              Nouveau produit
+            <Link to="/admin/products" className="btn-primary">
+              <span className="btn-icon">📋</span>
+              Gérer les produits
             </Link>
           </div>
         </div>

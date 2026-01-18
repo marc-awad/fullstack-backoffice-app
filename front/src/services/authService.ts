@@ -1,105 +1,181 @@
 // services/authService.ts
 import api from "../api/axios"
-import { jwtDecode } from "jwt-decode"
 import type { AuthResponse } from "../models/AuthResponse"
 import type { JwtPayload } from "../models/JwtPayload"
 
-const TOKEN_KEY = "token"
-
-export interface RegisterRequest {
-  username: string
-  email: string
+/**
+ * Inscription d'un nouvel utilisateur
+ */
+export const register = async (
+  username: string,
+  email: string,
   password: string
+): Promise<AuthResponse> => {
+  const response = await api.post<AuthResponse>("/auth/register", {
+    username,
+    email,
+    password,
+  })
+  return response.data
 }
 
-export const register = (data: RegisterRequest) => {
-  return api.post("/auth/register", data)
-}
-
+/**
+ * Connexion utilisateur
+ */
 export const login = async (
   username: string,
   password: string
-): Promise<void> => {
-  const res = await api.post<AuthResponse>("/auth/login", {
+): Promise<AuthResponse> => {
+  const response = await api.post<AuthResponse>("/auth/login", {
     username,
     password,
   })
 
-  localStorage.setItem(TOKEN_KEY, res.data.token)
+  // Stocker le token
+  if (response.data.token) {
+    localStorage.setItem("token", response.data.token)
+    console.log("✅ Token stocké avec succès")
+  }
+
+  return response.data
 }
 
-export const logout = () => {
-  localStorage.removeItem(TOKEN_KEY)
-}
-
-export const getToken = (): string | null => {
-  return localStorage.getItem(TOKEN_KEY)
+/**
+ * Déconnexion
+ */
+export const logout = (): void => {
+  localStorage.removeItem("token")
+  console.log("🚪 Utilisateur déconnecté")
 }
 
 /**
  * Vérifie si l'utilisateur est authentifié
- * Valide la présence ET l'expiration du token JWT
  */
 export const isAuthenticated = (): boolean => {
-  const token = getToken()
-  if (!token) return false
+  const token = localStorage.getItem("token")
+  if (!token) {
+    console.log("❌ isAuthenticated: Pas de token")
+    return false
+  }
 
   try {
-    const decoded = jwtDecode<JwtPayload>(token)
-    const isExpired = decoded.exp * 1000 <= Date.now()
+    const payload = decodeToken(token)
+    const isExpired = payload.exp * 1000 < Date.now()
 
     if (isExpired) {
-      // Token expiré, on le supprime
-      logout()
+      console.log("❌ isAuthenticated: Token expiré")
+      logout() // Nettoyer le token expiré
       return false
     }
 
+    console.log("✅ isAuthenticated: OK")
     return true
   } catch (error) {
-    // Token invalide/corrompu
-    logout()
+    console.error("❌ isAuthenticated: Erreur décodage token", error)
     return false
   }
 }
 
-export const getUserRole = (): "USER" | "ADMIN" | null => {
-  const token = getToken()
-  if (!token) return null
+/**
+ * Récupère le rôle de l'utilisateur depuis le token
+ */
+export const getUserRole = (): string | null => {
+  const token = localStorage.getItem("token")
+  if (!token) {
+    console.warn("⚠️ getUserRole: Pas de token")
+    return null
+  }
 
   try {
-    const decoded = jwtDecode<JwtPayload>(token)
+    const payload = decodeToken(token)
+    console.log("🔑 Token décodé dans getUserRole:", payload)
 
-    // Vérifier que le token n'est pas expiré
-    if (decoded.exp * 1000 <= Date.now()) {
-      logout()
-      return null
+    // Le backend envoie roles comme STRING: "ROLE_ADMIN,ROLE_USER"
+    let role: string | null = null
+
+    if (payload.roles) {
+      // Si c'est une string, prendre le premier rôle
+      if (typeof payload.roles === "string") {
+        const rolesArray = payload.roles.split(",")
+        role = rolesArray[0] // Prendre le premier rôle
+        console.log("📋 Roles (string):", payload.roles)
+        console.log("👤 Premier rôle extrait:", role)
+      }
+      // Si c'est un tableau
+      else if (Array.isArray(payload.roles)) {
+        role = payload.roles[0]
+        console.log("📋 Roles (array):", payload.roles)
+        console.log("👤 Premier rôle extrait:", role)
+      }
+    }
+    // Fallback sur 'role' (au singulier)
+    else if (payload.role) {
+      role = typeof payload.role === "string" ? payload.role : payload.role[0]
+      console.log("👤 Rôle (singulier) extrait:", role)
+    }
+    // Fallback sur 'authorities' (Spring Security)
+    else if (payload.authorities) {
+      role = Array.isArray(payload.authorities)
+        ? payload.authorities[0]
+        : payload.authorities
+      console.log("👤 Authority extrait:", role)
     }
 
-    return decoded.role
-  } catch {
-    logout()
+    // Enlever le préfixe "ROLE_" si présent
+    if (role) {
+      role = role.replace("ROLE_", "")
+      console.log("✅ Rôle final:", role)
+    } else {
+      console.warn("⚠️ Aucun rôle trouvé dans le token")
+    }
+
+    return role
+  } catch (error) {
+    console.error("❌ getUserRole: Erreur décodage token", error)
     return null
   }
 }
 
 /**
- * Récupère les informations de l'utilisateur depuis le token
+ * Récupère les informations de l'utilisateur actuel
  */
 export const getCurrentUser = (): JwtPayload | null => {
-  const token = getToken()
-  if (!token) return null
+  const token = localStorage.getItem("token")
+  if (!token) {
+    console.warn("⚠️ getCurrentUser: Pas de token")
+    return null
+  }
 
   try {
-    const decoded = jwtDecode<JwtPayload>(token)
-
-    if (decoded.exp * 1000 <= Date.now()) {
-      logout()
-      return null
-    }
-
-    return decoded
-  } catch {
-    logout()
+    return decodeToken(token)
+  } catch (error) {
+    console.error("❌ getCurrentUser: Erreur décodage token", error)
     return null
+  }
+}
+
+/**
+ * Récupère le token JWT
+ */
+export const getToken = (): string | null => {
+  return localStorage.getItem("token")
+}
+
+/**
+ * Décode un token JWT manuellement
+ */
+const decodeToken = (token: string): JwtPayload => {
+  try {
+    const base64Url = token.split(".")[1]
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    )
+    return JSON.parse(jsonPayload)
+  } catch (error) {
+    throw new Error("Invalid token format")
   }
 }

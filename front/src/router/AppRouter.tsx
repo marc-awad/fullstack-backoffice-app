@@ -12,38 +12,26 @@ import Profile from "../pages/Profile"
 import MyOrders from "../pages/MyOrders"
 import NewOrder from "../pages/NewOrder"
 import AdminDashboard from "../pages/AdminDashboard"
-import ProtectedRoute from "../guards/ProtectedRoute"
+import AdminProducts from "../pages/AdminProducts"
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Layout>
         <Routes>
-          {/* Page d'accueil PUBLIQUE */}
+          {/* ========== ROUTES PUBLIQUES ========== */}
           <Route path="/" element={<Home />} />
-
-          {/* Routes publiques */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
-
-          {/* Route PUBLIQUE - Détail produit */}
           <Route path="/products/:id" element={<ProductDetail />} />
 
-          {/* Routes protégées - nécessitent authentification */}
+          {/* ========== ROUTES UTILISATEUR AUTHENTIFIÉ ========== */}
           <Route
             path="/dashboard"
             element={
               <AuthGuard>
                 <h1>Dashboard Utilisateur</h1>
-              </AuthGuard>
-            }
-          />
-          <Route
-            path="/admin/dashboard"
-            element={
-              <AuthGuard>
-                <AdminDashboard />
               </AuthGuard>
             }
           />
@@ -55,8 +43,6 @@ export default function AppRouter() {
               </AuthGuard>
             }
           />
-
-          {/* Route Mes commandes - PROTÉGÉE */}
           <Route
             path="/orders"
             element={
@@ -65,8 +51,6 @@ export default function AppRouter() {
               </AuthGuard>
             }
           />
-
-          {/* Route Nouvelle commande - PROTÉGÉE */}
           <Route
             path="/orders/new"
             element={
@@ -76,17 +60,25 @@ export default function AppRouter() {
             }
           />
 
-          {/* Routes ADMIN */}
+          {/* ========== ROUTES ADMIN ========== */}
           <Route
             path="/admin"
             element={
               <AdminGuard>
-                <h1>🛡️ Backoffice Admin</h1>
+                <AdminDashboard />
+              </AdminGuard>
+            }
+          />
+          <Route
+            path="/admin/products"
+            element={
+              <AdminGuard>
+                <AdminProducts />
               </AdminGuard>
             }
           />
 
-          {/* Route par défaut */}
+          {/* ========== ROUTE PAR DÉFAUT ========== */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>
