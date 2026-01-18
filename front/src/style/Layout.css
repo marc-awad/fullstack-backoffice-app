@@ -1,4 +1,35 @@
-/* style/Layout.css */
+/* style/Layout.css - Version améliorée UX/UI */
+
+:root {
+  --color-footer-bg: #2c3e50;
+  --color-footer-bg-dark: #1a252f;
+  --color-footer-text: rgba(255, 255, 255, 0.8);
+  --color-footer-text-hover: #ffffff;
+  --color-bg-page: #f8f9fa;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* ============================================
    LAYOUT GLOBAL
@@ -7,23 +38,50 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  animation: fadeIn 0.3s var(--transition-base);
 }
 
 .main-content {
   flex: 1;
   width: 100%;
-  background: #f8f9fa;
+  background: var(--color-bg-page);
+  animation: fadeIn 0.4s var(--transition-base) 0.1s both;
 }
 
 /* ============================================
    FOOTER
    ============================================ */
 .footer {
-  background: #2c3e50;
+  background: linear-gradient(135deg, var(--color-footer-bg) 0%, var(--color-footer-bg-dark) 100%);
   color: white;
-  padding: 2rem 0;
+  padding: 3rem 0 2rem;
   margin-top: auto;
   width: 100%;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  animation: slideInUp 0.6s var(--transition-slow);
+}
+
+/* Bordure décorative en haut du footer */
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+  background-size: 200% 100%;
+  animation: gradientMove 3s linear infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .footer-content {
@@ -34,43 +92,129 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .footer-content p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--color-footer-text);
+  font-size: 0.95rem;
+  font-weight: 400;
+  transition: color var(--transition-base);
+}
+
+.footer-content p:hover {
+  color: var(--color-footer-text-hover);
 }
 
 .footer-links {
   display: flex;
-  gap: 2rem;
+  gap: 2.5rem;
 }
 
 .footer-links a {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--color-footer-text);
   text-decoration: none;
-  transition: color 0.2s;
-  font-size: 0.9rem;
+  transition: all var(--transition-base);
+  font-size: 0.95rem;
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+/* Effet de soulignement animé */
+.footer-links a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  transition: width var(--transition-base);
 }
 
 .footer-links a:hover {
-  color: white;
-  text-decoration: underline;
+  color: var(--color-footer-text-hover);
+  transform: translateY(-2px);
+}
+
+.footer-links a:hover::after {
+  width: 100%;
+}
+
+.footer-links a:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* ============================================
+   ACCESSIBILITÉ
+   ============================================ */
+*:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Amélioration du contraste */
+@media (prefers-contrast: high) {
+  .footer {
+    border-top: 3px solid white;
+  }
+  
+  .footer-links a {
+    border-bottom: 1px solid var(--color-footer-text);
+  }
+}
+
+/* Respect des préférences de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .footer::before {
+    animation: none;
+  }
 }
 
 /* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
+  .footer {
+    padding: 2rem 0 1.5rem;
+  }
+
   .footer-content {
     flex-direction: column;
     text-align: center;
     padding: 0 1rem;
+    gap: 1.25rem;
   }
 
   .footer-links {
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .footer-links a {
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-content p {
+    font-size: 0.85rem;
+  }
+
+  .footer-links a {
+    font-size: 0.9rem;
   }
 }

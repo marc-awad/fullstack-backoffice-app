@@ -2,6 +2,20 @@
 import { useState, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import {
+  ShoppingCart,
+  Home,
+  Package,
+  ClipboardList,
+  User,
+  Shield,
+  Hand,
+  LogOut,
+  Lock,
+  Sparkles,
+  Menu,
+  X
+} from "lucide-react"
+import {
   isAuthenticated,
   getCurrentUser,
   getUserRole,
@@ -59,7 +73,7 @@ export default function Header() {
       <div className="header-container">
         {/* Logo */}
         <Link to="/" className="header-logo" onClick={handleLinkClick}>
-          <span className="logo-icon">🛒</span>
+          <ShoppingCart className="logo-icon" size={28} strokeWidth={2.5} />
           <span className="logo-text">E-commerce</span>
         </Link>
 
@@ -69,9 +83,11 @@ export default function Header() {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Menu de navigation"
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          {mobileMenuOpen ? (
+            <X size={24} strokeWidth={2.5} />
+          ) : (
+            <Menu size={24} strokeWidth={2.5} />
+          )}
         </button>
 
         {/* Navigation principale */}
@@ -83,7 +99,7 @@ export default function Header() {
                 className={`nav-link ${isActivePath("/") ? "active" : ""}`}
                 onClick={handleLinkClick}
               >
-                <span className="nav-icon">🏠</span>
+                <Home className="nav-icon" size={18} strokeWidth={2.5} />
                 Accueil
               </Link>
             </li>
@@ -96,7 +112,7 @@ export default function Header() {
                 }`}
                 onClick={handleLinkClick}
               >
-                <span className="nav-icon">📦</span>
+                <Package className="nav-icon" size={18} strokeWidth={2.5} />
                 Produits
               </Link>
             </li>
@@ -112,7 +128,7 @@ export default function Header() {
                     }`}
                     onClick={handleLinkClick}
                   >
-                    <span className="nav-icon">📋</span>
+                    <ClipboardList className="nav-icon" size={18} strokeWidth={2.5} />
                     Mes commandes
                   </Link>
                 </li>
@@ -125,7 +141,7 @@ export default function Header() {
                     }`}
                     onClick={handleLinkClick}
                   >
-                    <span className="nav-icon">👤</span>
+                    <User className="nav-icon" size={18} strokeWidth={2.5} />
                     Mon compte
                   </Link>
                 </li>
@@ -142,7 +158,7 @@ export default function Header() {
                   }`}
                   onClick={handleLinkClick}
                 >
-                  <span className="nav-icon">🛡️</span>
+                  <Shield className="nav-icon" size={18} strokeWidth={2.5} />
                   Administration
                 </Link>
               </li>
@@ -154,10 +170,11 @@ export default function Header() {
             {isAuth ? (
               <div className="user-menu">
                 <span className="user-greeting">
-                  👋 Bonjour, <strong>{username}</strong>
+                  <Hand className="greeting-icon" size={18} strokeWidth={2.5} />
+                  Bonjour, <strong>{username}</strong>
                 </span>
                 <button onClick={handleLogout} className="btn-logout">
-                  <span className="btn-icon">🚪</span>
+                  <LogOut className="btn-icon" size={18} strokeWidth={2.5} />
                   Déconnexion
                 </button>
               </div>
@@ -168,7 +185,7 @@ export default function Header() {
                   className="btn-login"
                   onClick={handleLinkClick}
                 >
-                  <span className="btn-icon">🔐</span>
+                  <Lock className="btn-icon" size={18} strokeWidth={2.5} />
                   Connexion
                 </Link>
                 <Link
@@ -176,7 +193,7 @@ export default function Header() {
                   className="btn-register"
                   onClick={handleLinkClick}
                 >
-                  <span className="btn-icon">✨</span>
+                  <Sparkles className="btn-icon" size={18} strokeWidth={2.5} />
                   Inscription
                 </Link>
               </div>

@@ -1,6 +1,12 @@
 // pages/MyOrders.tsx
 import { useState, useEffect } from "react"
 import { useLocation, Link } from "react-router-dom"
+import {
+  CheckCircle,
+  Loader2,
+  Package,
+  ShoppingBag
+} from "lucide-react"
 import { getMyOrders } from "../services/orderService"
 import type { Order } from "../models/Order"
 import "../style/MyOrders.css"
@@ -27,7 +33,11 @@ export default function MyOrders() {
 
       try {
         const data = await getMyOrders()
-        const sortedOrders = data.sort(/*...*/)
+        const sortedOrders = data.sort((a, b) => {
+          const dateA = new Date(a.createdAt || 0).getTime()
+          const dateB = new Date(b.createdAt || 0).getTime()
+          return dateB - dateA
+        })
         setOrders(sortedOrders)
       } catch (err: any) {
         console.error("Erreur complète:", err)
@@ -113,7 +123,7 @@ export default function MyOrders() {
         {/* Message de succès */}
         {successMessage && (
           <div className="success-message">
-            <span className="success-icon">✅</span>
+            <CheckCircle className="success-icon" size={24} strokeWidth={2.5} />
             {successMessage}
           </div>
         )}
@@ -121,7 +131,7 @@ export default function MyOrders() {
         {/* Chargement */}
         {loading && (
           <div className="loading">
-            <div className="spinner"></div>
+            <Loader2 className="spinner" size={50} strokeWidth={2.5} />
             <p>Chargement de vos commandes...</p>
           </div>
         )}
@@ -181,7 +191,7 @@ export default function MyOrders() {
         {/* Aucune commande */}
         {!loading && !error && orders.length === 0 && (
           <div className="no-orders">
-            <div className="no-orders-icon">📦</div>
+            <ShoppingBag className="no-orders-icon" size={80} strokeWidth={2} />
             <h2>Aucune commande pour le moment</h2>
             <p>Vous n'avez pas encore passé de commande.</p>
             <Link to="/" className="btn-primary">

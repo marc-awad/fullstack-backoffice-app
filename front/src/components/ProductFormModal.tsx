@@ -9,6 +9,7 @@ import {
 } from "../services/adminService"
 import type { Product } from "../models/Product"
 import "../style/ProductFormModal.css"
+import { AlertCircle } from "lucide-react"
 
 interface Props {
   product: Product | null
@@ -35,10 +36,8 @@ export default function ProductFormModal({ product, onClose }: Props) {
   }, [])
 
   const fetchCategories = async () => {
-    console.log("🔄 Chargement des catégories...")
     try {
       const data = await getCategories()
-      console.log("✅ Catégories reçues:", data)
       
       // Si l'API retourne des strings, les transformer en objets avec index comme ID
       const categoriesArray = Array.isArray(data) 
@@ -48,7 +47,6 @@ export default function ProductFormModal({ product, onClose }: Props) {
           }))
         : data
       
-      console.log("📋 Catégories transformées:", categoriesArray)
       setCategories(categoriesArray)
     } catch (err) {
       console.error("❌ Erreur lors du chargement des catégories:", err)
@@ -92,7 +90,6 @@ export default function ProductFormModal({ product, onClose }: Props) {
     setLoading(true)
     setError(null)
 
-    console.log("📤 Données envoyées au backend:", formData)
 
     try {
       if (product) {
@@ -143,7 +140,7 @@ export default function ProductFormModal({ product, onClose }: Props) {
           <div className="modal-body">
             {error && (
               <div className="error-message">
-                <span className="error-icon">⚠️</span>
+<AlertCircle className="error-icon" size={24} strokeWidth={2.5} />
                 <p>{error}</p>
               </div>
             )}

@@ -1,6 +1,17 @@
 // pages/AdminUsers.tsx
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
+import {
+  ArrowLeft,
+  AlertCircle,
+  Users as UsersIcon,
+  Edit2,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle,
+  XCircle
+} from "lucide-react"
 import { getAdminUsers } from "../services/adminService"
 import UserFormModal from "../components/UserFormModal"
 import type { UserResponse } from "../services/adminService"
@@ -30,7 +41,6 @@ export default function AdminUsers() {
       const data = await getAdminUsers(currentPage, 10)
       setPage(data)
       setUsers(data.content)
-      console.log("👥 Utilisateurs chargés:", data.content)
     } catch (err: any) {
       console.error("Erreur lors du chargement des utilisateurs:", err)
       setError("Impossible de charger les utilisateurs")
@@ -67,7 +77,7 @@ export default function AdminUsers() {
     return (
       <div className="admin-users">
         <div className="loading-container">
-          <div className="spinner"></div>
+          <Loader2 className="spinner" size={50} strokeWidth={2.5} />
           <p>Chargement des utilisateurs...</p>
         </div>
       </div>
@@ -85,7 +95,8 @@ export default function AdminUsers() {
           </div>
           <div className="header-actions">
             <Link to="/admin" className="btn-secondary">
-              ← Retour au dashboard
+              <ArrowLeft className="btn-icon" size={18} strokeWidth={2.5} />
+              Retour au dashboard
             </Link>
           </div>
         </div>
@@ -94,7 +105,7 @@ export default function AdminUsers() {
       {/* Error Message */}
       {error && (
         <div className="error-banner">
-          <span className="error-icon">⚠️</span>
+          <AlertCircle className="error-icon" size={24} strokeWidth={2.5} />
           <p>{error}</p>
           <button onClick={fetchUsers} className="btn-retry">
             Réessayer
@@ -120,7 +131,7 @@ export default function AdminUsers() {
             {users.length === 0 ? (
               <tr>
                 <td colSpan={7} className="empty-state">
-                  <div className="empty-icon">👥</div>
+                  <UsersIcon className="empty-icon" size={64} strokeWidth={2} />
                   <p>Aucun utilisateur trouvé</p>
                 </td>
               </tr>
@@ -160,7 +171,17 @@ export default function AdminUsers() {
                         user.enabled ? "status-active" : "status-inactive"
                       }`}
                     >
-                      {user.enabled ? "✓ Actif" : "✗ Désactivé"}
+                      {user.enabled ? (
+                        <>
+                          <CheckCircle size={16} strokeWidth={2.5} />
+                          Actif
+                        </>
+                      ) : (
+                        <>
+                          <XCircle size={16} strokeWidth={2.5} />
+                          Désactivé
+                        </>
+                      )}
                     </span>
                   </td>
                   <td>
@@ -175,7 +196,7 @@ export default function AdminUsers() {
                         className="btn-edit"
                         title="Modifier"
                       >
-                        ✏️
+                        <Edit2 size={18} strokeWidth={2.5} />
                       </button>
                     </div>
                   </td>
@@ -194,7 +215,8 @@ export default function AdminUsers() {
             disabled={currentPage === 0}
             className="pagination-btn"
           >
-            ← Précédent
+            <ChevronLeft size={18} strokeWidth={2.5} />
+            Précédent
           </button>
           <span className="pagination-info">
             Page {currentPage + 1} sur {page.totalPages}
@@ -204,7 +226,8 @@ export default function AdminUsers() {
             disabled={currentPage >= page.totalPages - 1}
             className="pagination-btn"
           >
-            Suivant →
+            Suivant
+            <ChevronRight size={18} strokeWidth={2.5} />
           </button>
         </div>
       )}

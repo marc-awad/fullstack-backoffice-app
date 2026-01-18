@@ -34,7 +34,6 @@ export const login = async (
   // Stocker le token
   if (response.data.token) {
     localStorage.setItem("token", response.data.token)
-    console.log("✅ Token stocké avec succès")
   }
 
   return response.data
@@ -45,7 +44,6 @@ export const login = async (
  */
 export const logout = (): void => {
   localStorage.removeItem("token")
-  console.log("🚪 Utilisateur déconnecté")
 }
 
 /**
@@ -54,7 +52,6 @@ export const logout = (): void => {
 export const isAuthenticated = (): boolean => {
   const token = localStorage.getItem("token")
   if (!token) {
-    console.log("❌ isAuthenticated: Pas de token")
     return false
   }
 
@@ -63,12 +60,10 @@ export const isAuthenticated = (): boolean => {
     const isExpired = payload.exp * 1000 < Date.now()
     
     if (isExpired) {
-      console.log("❌ isAuthenticated: Token expiré")
       logout() // Nettoyer le token expiré
       return false
     }
     
-    console.log("✅ isAuthenticated: OK")
     return true
   } catch (error) {
     console.error("❌ isAuthenticated: Erreur décodage token", error)
@@ -89,7 +84,6 @@ export const getUserRole = (): string | null => {
 
   try {
     const payload = decodeToken(token)
-    console.log("🔑 Token décodé dans getUserRole:", payload)
 
     let roles: string[] = []
 
@@ -98,10 +92,8 @@ export const getUserRole = (): string | null => {
       if (typeof payload.roles === "string") {
         // Si c'est une string "ROLE_USER,ROLE_ADMIN", la splitter
         roles = payload.roles.split(",").map(r => r.trim())
-        console.log("📋 Roles (string splitée):", roles)
       } else if (Array.isArray(payload.roles)) {
         roles = payload.roles
-        console.log("📋 Roles (array):", roles)
       }
     } else if (payload.role) {
       // Fallback sur 'role' au singulier
@@ -110,7 +102,6 @@ export const getUserRole = (): string | null => {
         : Array.isArray(payload.role) 
         ? payload.role 
         : []
-      console.log("📋 Role (singulier):", roles)
     } else if (payload.authorities) {
       // Fallback sur 'authorities'
       roles = typeof payload.authorities === "string"
@@ -118,20 +109,16 @@ export const getUserRole = (): string | null => {
         : Array.isArray(payload.authorities)
         ? payload.authorities
         : []
-      console.log("📋 Authorities:", roles)
     }
 
     // IMPORTANT: Prioriser ADMIN si présent
     // Enlever les préfixes "ROLE_"
     const cleanRoles = roles.map(r => r.replace("ROLE_", ""))
-    console.log("🧹 Roles nettoyés:", cleanRoles)
 
     // Si ADMIN est présent, retourner ADMIN, sinon USER
     if (cleanRoles.includes("ADMIN")) {
-      console.log("✅ Rôle final: ADMIN (prioritaire)")
       return "ADMIN"
     } else if (cleanRoles.includes("USER")) {
-      console.log("✅ Rôle final: USER")
       return "USER"
     }
 

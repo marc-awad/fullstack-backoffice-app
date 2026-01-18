@@ -1,6 +1,20 @@
 // pages/AdminProducts.tsx
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
+import {
+  Plus,
+  ArrowLeft,
+  AlertCircle,
+  Package,
+  Edit2,
+  Trash2,
+  Image as ImageIcon,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  AlertTriangle,
+  X
+} from "lucide-react"
 import { getAdminProducts, deleteProduct } from "../services/adminService"
 import ProductFormModal from "../components/ProductFormModal"
 import type { Product } from "../models/Product"
@@ -101,7 +115,7 @@ export default function AdminProducts() {
     return (
       <div className="admin-products">
         <div className="loading-container">
-          <div className="spinner"></div>
+          <Loader2 className="spinner" size={50} strokeWidth={2.5} />
           <p>Chargement des produits...</p>
         </div>
       </div>
@@ -119,10 +133,11 @@ export default function AdminProducts() {
           </div>
           <div className="header-actions">
             <Link to="/admin" className="btn-secondary">
-              ← Retour au dashboard
+              <ArrowLeft className="btn-icon" size={18} strokeWidth={2.5} />
+              Retour au dashboard
             </Link>
             <button onClick={handleAdd} className="btn-primary">
-              <span className="btn-icon">➕</span>
+              <Plus className="btn-icon" size={18} strokeWidth={2.5} />
               Ajouter un produit
             </button>
           </div>
@@ -132,7 +147,7 @@ export default function AdminProducts() {
       {/* Error Message */}
       {error && (
         <div className="error-banner">
-          <span className="error-icon">⚠️</span>
+          <AlertCircle className="error-icon" size={24} strokeWidth={2.5} />
           <p>{error}</p>
           <button onClick={fetchProducts} className="btn-retry">
             Réessayer
@@ -157,7 +172,7 @@ export default function AdminProducts() {
             {products.length === 0 ? (
               <tr>
                 <td colSpan={6} className="empty-state">
-                  <div className="empty-icon">📦</div>
+                  <Package className="empty-icon" size={64} strokeWidth={2} />
                   <p>Aucun produit disponible</p>
                   <button onClick={handleAdd} className="btn-primary">
                     Créer le premier produit
@@ -179,7 +194,9 @@ export default function AdminProducts() {
                           }}
                         />
                       ) : (
-                        <div className="no-image">📷</div>
+                        <div className="no-image">
+                          <ImageIcon size={24} strokeWidth={2} />
+                        </div>
                       )}
                     </div>
                   </td>
@@ -224,14 +241,14 @@ export default function AdminProducts() {
                         className="btn-edit"
                         title="Modifier"
                       >
-                        ✏️
+                        <Edit2 size={18} strokeWidth={2.5} />
                       </button>
                       <button
                         onClick={() => handleDeleteClick(product)}
                         className="btn-delete"
                         title="Supprimer"
                       >
-                        🗑️
+                        <Trash2 size={18} strokeWidth={2.5} />
                       </button>
                     </div>
                   </td>
@@ -250,7 +267,8 @@ export default function AdminProducts() {
             disabled={currentPage === 0}
             className="pagination-btn"
           >
-            ← Précédent
+            <ChevronLeft size={18} strokeWidth={2.5} />
+            Précédent
           </button>
           <span className="pagination-info">
             Page {currentPage + 1} sur {page.totalPages}
@@ -260,7 +278,8 @@ export default function AdminProducts() {
             disabled={currentPage >= page.totalPages - 1}
             className="pagination-btn"
           >
-            Suivant →
+            Suivant
+            <ChevronRight size={18} strokeWidth={2.5} />
           </button>
         </div>
       )}
@@ -283,12 +302,12 @@ export default function AdminProducts() {
             <div className="modal-header">
               <h2>Confirmer la suppression</h2>
               <button onClick={handleCancelDelete} className="modal-close">
-                ✕
+                <X size={24} strokeWidth={2.5} />
               </button>
             </div>
             <div className="modal-body">
               <div className="delete-warning">
-                <span className="warning-icon">⚠️</span>
+                <AlertTriangle className="warning-icon" size={48} strokeWidth={2.5} />
                 <p>
                   Êtes-vous sûr de vouloir supprimer le produit{" "}
                   <strong>{productToDelete.name}</strong> ?

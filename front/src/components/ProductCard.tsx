@@ -1,5 +1,6 @@
 // components/ProductCard.tsx
 import { Link } from "react-router-dom"
+import { Package } from "lucide-react"
 import type { Product } from "../models/Product"
 
 interface ProductCardProps {
@@ -14,15 +15,28 @@ export default function ProductCard({ product }: ProductCardProps) {
     }).format(price)
   }
 
+  // Gérer les deux cas : imageUrl ET lienImage
+  const imageUrl = product.imageUrl || product.lienImage
+
+
   return (
     <div className="product-card">
       <Link to={`/products/${product.id}`} className="product-card-link">
         <div className="product-image">
-          {product.imageUrl ? (
-            <img src={product.imageUrl} alt={product.name} />
-          ) : (
+          {imageUrl ? (
+            <img 
+              src={imageUrl} 
+              alt={product.name}
+              onError={(e) => {
+                console.error('Image failed to load:', imageUrl)
+                e.currentTarget.style.display = 'none'
+                e.currentTarget.nextElementSibling?.classList.remove('hidden')
+              }}
+            />
+          ) : null}
+          {!imageUrl && (
             <div className="product-image-placeholder">
-              <span>📦</span>
+              <Package size={48} strokeWidth={2} />
             </div>
           )}
           {product.stockQuantity === 0 && (

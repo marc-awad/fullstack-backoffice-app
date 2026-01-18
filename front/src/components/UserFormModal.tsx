@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { updateUser, type UserResponse, type UpdateUserRequest } from "../services/adminService"
 import "../style/ProductFormModal.css"
+import { AlertTriangle } from "lucide-react"
 
 interface Props {
   user: UserResponse
@@ -21,8 +22,6 @@ export default function UserFormModal({ user, onClose }: Props) {
 
     setLoading(true)
     setError(null)
-
-    console.log("📤 Données envoyées pour l'utilisateur:", formData)
 
     try {
       await updateUser(user.id, formData)
@@ -82,7 +81,7 @@ export default function UserFormModal({ user, onClose }: Props) {
           <div className="modal-body">
             {error && (
               <div className="error-message">
-                <span className="error-icon">⚠️</span>
+<AlertTriangle className="error-icon" size={24} strokeWidth={2.5} />
                 <p>{error}</p>
               </div>
             )}

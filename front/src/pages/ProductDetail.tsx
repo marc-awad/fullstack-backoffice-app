@@ -1,6 +1,18 @@
 // pages/ProductDetail.tsx
 import { useEffect, useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
+import {
+  AlertCircle,
+  Loader2,
+  Package,
+  XCircle,
+  AlertTriangle,
+  CheckCircle,
+  ShoppingCart,
+  Plus,
+  Lightbulb,
+  ArrowLeft
+} from "lucide-react"
 import { getProductById } from "../services/productService"
 import type { Product } from "../models/Product"
 import "../style/ProductDetail.css"
@@ -93,7 +105,7 @@ export default function ProductDetail() {
     return (
       <div className="product-detail-container">
         <div className="loading-spinner">
-          <div className="spinner"></div>
+          <Loader2 className="spinner" size={50} strokeWidth={2.5} />
           <p>Chargement du produit...</p>
         </div>
       </div>
@@ -105,7 +117,7 @@ export default function ProductDetail() {
     return (
       <div className="product-detail-container">
         <div className="error-container">
-          <div className="error-icon">⚠️</div>
+          <AlertCircle className="error-icon" size={64} strokeWidth={2} />
           <h2>Oups !</h2>
           <p className="error-message">{error || "Produit introuvable"}</p>
           <div className="error-actions">
@@ -133,39 +145,69 @@ export default function ProductDetail() {
         <span className="breadcrumb-current">{product.name}</span>
       </nav>
 
-      {/* Contenu principal */}
-      <div className="product-detail-content">
-        {/* Image du produit */}
-        <div className="product-image-section">
-          {product.imageUrl ? (
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="product-image-large"
-            />
-          ) : (
-            <div className="product-image-placeholder-large">
-              <span className="placeholder-icon">📦</span>
-              <p>Aucune image disponible</p>
-            </div>
-          )}
 
-          {product.stockQuantity === 0 && (
-            <div className="stock-badge out-of-stock">
-              <span>❌</span> Rupture de stock
-            </div>
-          )}
-          {product.stockQuantity > 0 && product.stockQuantity <= 5 && (
-            <div className="stock-badge low-stock">
-              <span>⚠️</span> Stock limité
-            </div>
-          )}
-          {product.stockQuantity > 5 && (
-            <div className="stock-badge in-stock">
-              <span>✅</span> En stock
-            </div>
-          )}
+
+      {/* Contenu principal */}
+<div className="product-detail-content">
+  {/* Image du produit */}
+  <div className="product-image-section">
+    {(() => {
+      const imageUrl = product.imageUrl || product.lienImage
+
+      return imageUrl ? (
+        <>
+          <img
+            src={imageUrl}
+            alt={product.name}
+            className="product-image-large"
+            onError={(e) => {
+              console.error("Image failed to load:", imageUrl)
+              e.currentTarget.style.display = "none"
+              const placeholder =
+                e.currentTarget.nextElementSibling as HTMLElement
+              if (placeholder) placeholder.style.display = "flex"
+            }}
+          />
+
+          {/* Placeholder caché par défaut */}
+          <div
+            className="product-image-placeholder-large"
+            style={{ display: "none" }}
+          >
+            <Package className="placeholder-icon" size={80} strokeWidth={2} />
+            <p>Aucune image disponible</p>
+          </div>
+        </>
+      ) : (
+        <div className="product-image-placeholder-large">
+          <Package className="placeholder-icon" size={80} strokeWidth={2} />
+          <p>Aucune image disponible</p>
         </div>
+      )
+    })()}
+
+    {product.stockQuantity === 0 && (
+      <div className="stock-badge out-of-stock">
+        <XCircle size={20} strokeWidth={2.5} />
+        Rupture de stock
+      </div>
+    )}
+
+    {product.stockQuantity > 0 && product.stockQuantity <= 5 && (
+      <div className="stock-badge low-stock">
+        <AlertTriangle size={20} strokeWidth={2.5} />
+        Stock limité
+      </div>
+    )}
+
+    {product.stockQuantity > 5 && (
+      <div className="stock-badge in-stock">
+        <CheckCircle size={20} strokeWidth={2.5} />
+        En stock
+      </div>
+    )}
+  </div>
+
 
         {/* Informations du produit */}
         <div className="product-info-section">
@@ -231,20 +273,20 @@ export default function ProductDetail() {
             {product.stockQuantity > 0 ? (
               <>
                 <button className="btn-primary btn-large" onClick={handleOrder}>
-                  <span className="btn-icon">🛒</span>
+                  <ShoppingCart className="btn-icon" size={20} strokeWidth={2.5} />
                   Commander maintenant
                 </button>
                 <button
                   className="btn-secondary btn-large"
                   onClick={handleAddToCart}
                 >
-                  <span className="btn-icon">➕</span>
+                  <Plus className="btn-icon" size={20} strokeWidth={2.5} />
                   Ajouter au panier
                 </button>
               </>
             ) : (
               <button className="btn-disabled btn-large" disabled>
-                <span className="btn-icon">❌</span>
+                <XCircle className="btn-icon" size={20} strokeWidth={2.5} />
                 Produit indisponible
               </button>
             )}
@@ -253,7 +295,8 @@ export default function ProductDetail() {
           {!isAuthenticated && product.stockQuantity > 0 && (
             <div className="auth-notice">
               <p>
-                💡 <Link to="/login">Connectez-vous</Link> pour passer commande
+                <Lightbulb className="notice-icon" size={18} strokeWidth={2.5} />
+                <Link to="/login">Connectez-vous</Link> pour passer commande
               </p>
             </div>
           )}
@@ -279,7 +322,8 @@ export default function ProductDetail() {
       {/* Bouton de retour */}
       <div className="back-button-container">
         <button onClick={() => navigate(-1)} className="btn-back">
-          ← Retour aux produits
+          <ArrowLeft size={18} strokeWidth={2.5} />
+          Retour aux produits
         </button>
       </div>
     </div>

@@ -1,4 +1,5 @@
 // components/SearchBar.tsx
+import { Search } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 
 interface SearchBarProps {
@@ -35,7 +36,7 @@ export default function SearchBar({
   return (
     <div className="search-bar">
       <div className="search-input-wrapper">
-        <span className="search-icon">🔍</span>
+<Search className="search-icon" size={20} strokeWidth={2.5} />
         <input
           type="text"
           className="search-input"

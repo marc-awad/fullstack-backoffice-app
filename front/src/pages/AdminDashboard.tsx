@@ -1,6 +1,19 @@
 // pages/AdminDashboard.tsx
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
+import {
+  DollarSign,
+  Package,
+  ShoppingCart,
+  Users,
+  ClipboardList,
+  BarChart3,
+  AlertCircle,
+  Bell,
+  TrendingUp,
+  ArrowRight,
+  Loader2
+} from "lucide-react"
 import { getAdminStats } from "../services/adminService"
 import type { AdminStats } from "../services/adminService"
 import "../style/AdminDashboard.css"
@@ -18,7 +31,6 @@ export default function AdminDashboard() {
       try {
         const data = await getAdminStats()
         setStats(data)
-        console.log("📊 Admin stats reçues :", stats)
       } catch (err: any) {
         console.error("Erreur lors du chargement des statistiques:", err)
 
@@ -59,7 +71,7 @@ export default function AdminDashboard() {
     return (
       <div className="admin-dashboard">
         <div className="loading-container">
-          <div className="spinner"></div>
+          <Loader2 className="spinner" size={50} strokeWidth={2.5} />
           <p>Chargement des statistiques...</p>
         </div>
       </div>
@@ -70,7 +82,7 @@ export default function AdminDashboard() {
     return (
       <div className="admin-dashboard">
         <div className="error-container">
-          <div className="error-icon">⚠️</div>
+          <AlertCircle className="error-icon" size={64} strokeWidth={2} />
           <h2>Erreur</h2>
           <p>{error}</p>
           <button
@@ -95,7 +107,7 @@ export default function AdminDashboard() {
           </div>
           <div className="header-actions">
             <Link to="/admin/products" className="btn-primary">
-              <span className="btn-icon">📋</span>
+              <ClipboardList className="btn-icon" size={18} strokeWidth={2.5} />
               Gérer les produits
             </Link>
           </div>
@@ -105,7 +117,7 @@ export default function AdminDashboard() {
       {/* Stats Cards */}
       <div className="stats-grid">
         <div className="stat-card stat-card-primary">
-          <div className="stat-icon">💰</div>
+          <DollarSign className="stat-icon" size={40} strokeWidth={2.5} />
           <div className="stat-content">
             <h3>Chiffre d'affaires</h3>
             <p className="stat-value">
@@ -116,7 +128,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="stat-card stat-card-success">
-          <div className="stat-icon">📦</div>
+          <ShoppingCart className="stat-icon" size={40} strokeWidth={2.5} />
           <div className="stat-content">
             <h3>Commandes</h3>
             <p className="stat-value">
@@ -129,7 +141,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="stat-card stat-card-info">
-          <div className="stat-icon">🛍️</div>
+          <Package className="stat-icon" size={40} strokeWidth={2.5} />
           <div className="stat-content">
             <h3>Produits</h3>
             <p className="stat-value">
@@ -143,7 +155,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="stat-card stat-card-warning">
-          <div className="stat-icon">👥</div>
+          <Users className="stat-icon" size={40} strokeWidth={2.5} />
           <div className="stat-content">
             <h3>Utilisateurs</h3>
             <p className="stat-value">{formatNumber(stats?.totalUsers || 0)}</p>
@@ -157,31 +169,31 @@ export default function AdminDashboard() {
         <h2>Actions rapides</h2>
         <div className="quick-actions-grid">
           <Link to="/admin/products" className="action-card">
-            <div className="action-icon">📋</div>
+            <ClipboardList className="action-icon" size={32} strokeWidth={2.5} />
             <h3>Gérer les produits</h3>
             <p>Consulter, modifier ou supprimer des produits</p>
-            <span className="action-arrow">→</span>
+            <ArrowRight className="action-arrow" size={20} strokeWidth={2.5} />
           </Link>
 
           <Link to="/admin/orders" className="action-card">
-            <div className="action-icon">📦</div>
+            <ShoppingCart className="action-icon" size={32} strokeWidth={2.5} />
             <h3>Gérer les commandes</h3>
             <p>Suivre et traiter les commandes clients</p>
-            <span className="action-arrow">→</span>
+            <ArrowRight className="action-arrow" size={20} strokeWidth={2.5} />
           </Link>
 
           <Link to="/admin/users" className="action-card">
-            <div className="action-icon">👥</div>
+            <Users className="action-icon" size={32} strokeWidth={2.5} />
             <h3>Gérer les utilisateurs</h3>
             <p>Administrer les comptes utilisateurs</p>
-            <span className="action-arrow">→</span>
+            <ArrowRight className="action-arrow" size={20} strokeWidth={2.5} />
           </Link>
 
           <Link to="/admin/reports" className="action-card">
-            <div className="action-icon">📊</div>
+            <BarChart3 className="action-icon" size={32} strokeWidth={2.5} />
             <h3>Rapports & Analytics</h3>
             <p>Consulter les statistiques détaillées</p>
-            <span className="action-arrow">→</span>
+            <ArrowRight className="action-arrow" size={20} strokeWidth={2.5} />
           </Link>
         </div>
       </div>
@@ -190,7 +202,10 @@ export default function AdminDashboard() {
       <div className="info-section">
         <div className="info-card info-card-highlight">
           <div className="info-header">
-            <h3>🔔 Notifications</h3>
+            <h3>
+              <Bell className="info-title-icon" size={20} strokeWidth={2.5} />
+              Notifications
+            </h3>
             <span className="badge">3</span>
           </div>
           <ul className="info-list">
@@ -227,7 +242,10 @@ export default function AdminDashboard() {
         </div>
 
         <div className="info-card">
-          <h3>📈 Tendances</h3>
+          <h3>
+            <TrendingUp className="info-title-icon" size={20} strokeWidth={2.5} />
+            Tendances
+          </h3>
           <div className="trend-chart">
             <div className="trend-item">
               <span className="trend-label">Ventes</span>
