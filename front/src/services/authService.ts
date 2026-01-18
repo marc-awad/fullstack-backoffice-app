@@ -61,13 +61,13 @@ export const isAuthenticated = (): boolean => {
   try {
     const payload = decodeToken(token)
     const isExpired = payload.exp * 1000 < Date.now()
-
+    
     if (isExpired) {
       console.log("❌ isAuthenticated: Token expiré")
       logout() // Nettoyer le token expiré
       return false
     }
-
+    
     console.log("✅ isAuthenticated: OK")
     return true
   } catch (error) {
@@ -78,6 +78,7 @@ export const isAuthenticated = (): boolean => {
 
 /**
  * Récupère le rôle de l'utilisateur depuis le token
+ * Priorise ADMIN si présent, sinon retourne USER
  */
 export const getUserRole = (): string | null => {
   const token = localStorage.getItem("token")
@@ -90,46 +91,52 @@ export const getUserRole = (): string | null => {
     const payload = decodeToken(token)
     console.log("🔑 Token décodé dans getUserRole:", payload)
 
-    // Le backend envoie roles comme STRING: "ROLE_ADMIN,ROLE_USER"
-    let role: string | null = null
+    let roles: string[] = []
 
+    // Extraire les rôles dans un tableau
     if (payload.roles) {
-      // Si c'est une string, prendre le premier rôle
       if (typeof payload.roles === "string") {
-        const rolesArray = payload.roles.split(",")
-        role = rolesArray[0] // Prendre le premier rôle
-        console.log("📋 Roles (string):", payload.roles)
-        console.log("👤 Premier rôle extrait:", role)
+        // Si c'est une string "ROLE_USER,ROLE_ADMIN", la splitter
+        roles = payload.roles.split(",").map(r => r.trim())
+        console.log("📋 Roles (string splitée):", roles)
+      } else if (Array.isArray(payload.roles)) {
+        roles = payload.roles
+        console.log("📋 Roles (array):", roles)
       }
-      // Si c'est un tableau
-      else if (Array.isArray(payload.roles)) {
-        role = payload.roles[0]
-        console.log("📋 Roles (array):", payload.roles)
-        console.log("👤 Premier rôle extrait:", role)
-      }
-    }
-    // Fallback sur 'role' (au singulier)
-    else if (payload.role) {
-      role = typeof payload.role === "string" ? payload.role : payload.role[0]
-      console.log("👤 Rôle (singulier) extrait:", role)
-    }
-    // Fallback sur 'authorities' (Spring Security)
-    else if (payload.authorities) {
-      role = Array.isArray(payload.authorities)
-        ? payload.authorities[0]
-        : payload.authorities
-      console.log("👤 Authority extrait:", role)
+    } else if (payload.role) {
+      // Fallback sur 'role' au singulier
+      roles = typeof payload.role === "string" 
+        ? [payload.role] 
+        : Array.isArray(payload.role) 
+        ? payload.role 
+        : []
+      console.log("📋 Role (singulier):", roles)
+    } else if (payload.authorities) {
+      // Fallback sur 'authorities'
+      roles = typeof payload.authorities === "string"
+        ? [payload.authorities]
+        : Array.isArray(payload.authorities)
+        ? payload.authorities
+        : []
+      console.log("📋 Authorities:", roles)
     }
 
-    // Enlever le préfixe "ROLE_" si présent
-    if (role) {
-      role = role.replace("ROLE_", "")
-      console.log("✅ Rôle final:", role)
-    } else {
-      console.warn("⚠️ Aucun rôle trouvé dans le token")
+    // IMPORTANT: Prioriser ADMIN si présent
+    // Enlever les préfixes "ROLE_"
+    const cleanRoles = roles.map(r => r.replace("ROLE_", ""))
+    console.log("🧹 Roles nettoyés:", cleanRoles)
+
+    // Si ADMIN est présent, retourner ADMIN, sinon USER
+    if (cleanRoles.includes("ADMIN")) {
+      console.log("✅ Rôle final: ADMIN (prioritaire)")
+      return "ADMIN"
+    } else if (cleanRoles.includes("USER")) {
+      console.log("✅ Rôle final: USER")
+      return "USER"
     }
 
-    return role
+    console.warn("⚠️ Aucun rôle valide trouvé, défaut: USER")
+    return "USER"
   } catch (error) {
     console.error("❌ getUserRole: Erreur décodage token", error)
     return null

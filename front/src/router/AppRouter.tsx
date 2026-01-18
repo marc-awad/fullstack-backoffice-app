@@ -13,6 +13,7 @@ import MyOrders from "../pages/MyOrders"
 import NewOrder from "../pages/NewOrder"
 import AdminDashboard from "../pages/AdminDashboard"
 import AdminProducts from "../pages/AdminProducts"
+import AdminUsers from "../pages/AdminUsers"
 
 export default function AppRouter() {
   return (
@@ -74,6 +75,14 @@ export default function AppRouter() {
             element={
               <AdminGuard>
                 <AdminProducts />
+              </AdminGuard>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminGuard>
+                <AdminUsers />
               </AdminGuard>
             }
           />
